@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <omp.h>
 #include <vector>
+#include <queue>
 
 #define N 60000
 #define SOURCE 103
@@ -89,82 +90,29 @@ int main() {
 
 
 
-
 void dijkstra(int** graph, int source) {
-    int visited[N];
-    int md;
-    int distance[N]; 
-    int mv;
-    int my_first; 
-    int my_id; 
-    int my_last; 
-    int my_md; 
-    int my_mv; 
-    int my_step; 
-    int nth;
+    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
+    std::vector<int> distance(N, MAXINT);
+    std::vector<bool> visited(N, false);
 
-    for (int i = 0; i < N; i++) {
-        visited[i] = 0;
-        distance[i] = graph[source][i];
-    }
-    visited[source] = 1;
-    
+    distance[source] = 0;
+    pq.push({0, source});
 
-    #pragma omp parallel private(my_first, my_id, my_last, my_md, my_mv, my_step) shared(visited, md, distance, mv, nth, graph)
-    {
-        my_id = omp_get_thread_num();
-        nth = omp_get_num_threads();
-        my_first = (my_id * N) / nth;
-        my_last = ((my_id + 1) * N) / nth - 1;
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
 
-        for (my_step = 1; my_step < N; my_step++) {
-            #pragma omp single
-            {
-                md = MAXINT;
-                mv = -1;
+        if (visited[u]) continue;
+        visited[u] = true;
+
+        for (int v = 0; v < N; v++) {
+            if (graph[u][v] != MAXINT && distance[u] + graph[u][v] < distance[v]) {
+                distance[v] = distance[u] + graph[u][v];
+                pq.push({distance[v], v});
             }
-
-            my_md = MAXINT;
-            my_mv = -1;
-
-            for (int k = my_first; k <= my_last; k++) {
-                if (!visited[k] && distance[k] < my_md) {
-                    my_md = distance[k];
-                    my_mv = k;
-                }
-            }
-
-            #pragma omp critical
-            {
-                if (my_md < md) {
-                    md = my_md;
-                    mv = my_mv;
-                }
-            }
-
-            #pragma omp barrier
-
-            #pragma omp single
-            {
-                if (mv != -1) {
-                    visited[mv] = 1;
-                }
-            }
-
-            #pragma omp barrier
-
-            if (mv != -1) {
-                for (int j = my_first; j <= my_last; j++) {
-                    if (!visited[j] && graph[mv][j] < MAXINT && distance[mv] + graph[mv][j] < distance[j]) {
-                        distance[j] = distance[mv] + graph[mv][j];
-                    }
-                }
-            }
-
-            #pragma omp barrier
         }
     }
-
     std::cout<< " distance " << distance[161] << "\n";
 
+    // Print distance or do other operations
 }
