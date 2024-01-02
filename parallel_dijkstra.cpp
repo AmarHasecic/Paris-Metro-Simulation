@@ -51,10 +51,10 @@ int main(int argc, char **argv) {
     dijkstra(graph, SOURCE);
     gettimeofday(&tv, &tz);
 
-    time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
-    printf("Nodes: %d\n", N);
-    printf("time cost is %1f\n", time_end - time_start);
-    return 0;
+        time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
+        printf("Nodes: %d\n", N);
+        printf("time cost is %1f\n", time_end - time_start);
+        return 0;
     }
     void dijkstra(int graph[N][N], int source){
     int visited[N];
@@ -71,9 +71,8 @@ int main(int argc, char **argv) {
     int nth; /* number of threads */
     /* Initialize all vertices' distance and status. */
     for (i = 0; i < N; i++) {
-    visited[i] = 0;
-
-    distance[i] = graph[source][i];
+        visited[i] = 0;
+        distance[i] = graph[source][i];
     }
     visited[source] = 1;
     /* OpenMP parallelization starts here */

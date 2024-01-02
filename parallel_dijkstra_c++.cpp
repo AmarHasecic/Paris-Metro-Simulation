@@ -11,6 +11,38 @@
 
 void dijkstra(int** graph, int source);
 
+int** createConnectionMatrix2() {
+    int numStations = N;
+    std::cout << numStations << std::endl;
+    int** adjacencyMatrix = new int*[N]; // Using new instead of malloc
+    for (int i = 0; i < N; i++) {
+        adjacencyMatrix[i] = new int[N];
+    }
+
+    std::ifstream fileConnections("NewYork/NewYork_Edgelist.csv");
+    if (!fileConnections) {
+        std::cerr << "Error opening file: NewYork/NewYork_Edgelist.csv" << std::endl;
+        exit(1);
+    }
+
+    std::string t1;
+    getline(fileConnections, t1);
+    for (int i = 0; i < N; i++) {
+        int source, target, c2;
+        char c;
+        float a, b, weight;
+        fileConnections >> a >> c >> b >> c >> source >> c >> target >> c >> c2 >> c >> weight;
+        getline(fileConnections, t1);
+        if (source < numStations && target < numStations)
+            adjacencyMatrix[source][target] = weight;
+        else 
+            break;
+    }
+    fileConnections.close();
+    std::cout << "kraj unose";
+    return adjacencyMatrix;
+}
+
 int main() {
     int threads;
     std::cout << "Please enter number of threads: ";
@@ -23,23 +55,9 @@ int main() {
     gettimeofday(&tv, &tz);
     time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
 
-    int** graph = new int*[N];
-    for (int i = 0; i < N; i++) {
-        graph[i] = new int[N];
-    }
-
-    std::ifstream file("input2048.txt");
-    if (!file) {
-        std::cerr << "Can't open the input file.\n";
-        exit(1);
-    }
-
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            file >> graph[i][j];
-        }
-    }
-
+    int** graph = createConnectionMatrix2();
+   
+    
     dijkstra(graph, SOURCE);
     gettimeofday(&tv, &tz);
 
@@ -52,8 +70,12 @@ int main() {
     }
     delete[] graph;
 
+
     return 0;
 }
+
+
+
 
 void dijkstra(int** graph, int source) {
     int visited[N];
@@ -127,5 +149,10 @@ void dijkstra(int** graph, int source) {
 
             #pragma omp barrier
         }
+    }
+
+    std::cout<<("\nThe distance vector is\n");
+    for (int i = 0; i < N; i++) {
+        std::cout<<distance[i]<< "\n";
     }
 }
