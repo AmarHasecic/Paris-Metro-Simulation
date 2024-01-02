@@ -12,7 +12,7 @@
 #include <climits>
 #include <chrono>
 
-#define VERTICES 50000
+#define VERTICES 3000
 std::vector<std::vector<int>> createConnectionMatrix() {
 
     std::unordered_map<std::string, int> stationIndices; 
@@ -61,9 +61,9 @@ int** createConnectionMatrix2() {
         adjacencyMatrix[i]=(int*)malloc(sizeof(int)*VERTICES);
     }
     std::cout<<"dsfs";
-    std::ifstream fileConnections("NewYork/NewYork_Edgelist.csv");
+    std::ifstream fileConnections("Data/NewYork_Edgelist.csv");
     if (!fileConnections.is_open()) {
-        std::cerr << "Error opening file: " << "Data/connections.txt" << std::endl;
+        std::cerr << "Error opening file: " << "Data/NewYork_Edgelist.csv" << std::endl;
     }
 
     std::string t1;
