@@ -5,9 +5,12 @@
 #include <omp.h>
 #include <vector>
 
-#define N 2048
-#define SOURCE 1
+#define N 3000
+#define SOURCE 103
 #define MAXINT 9999999
+
+
+//rezultat 794 zadnja linija za ispisati
 
 void dijkstra(int** graph, int source);
 
@@ -27,6 +30,16 @@ int** createConnectionMatrix2() {
 
     std::string t1;
     getline(fileConnections, t1);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if(i==j){
+                adjacencyMatrix[i][j]=0;
+            }else{
+                adjacencyMatrix[i][j]=MAXINT;
+            }
+            
+        }
+    }
     for (int i = 0; i < N; i++) {
         int source, target, c2;
         char c;
@@ -95,6 +108,7 @@ void dijkstra(int** graph, int source) {
         distance[i] = graph[source][i];
     }
     visited[source] = 1;
+    
 
     #pragma omp parallel private(my_first, my_id, my_last, my_md, my_mv, my_step) shared(visited, md, distance, mv, nth, graph)
     {
@@ -151,8 +165,6 @@ void dijkstra(int** graph, int source) {
         }
     }
 
-    std::cout<<("\nThe distance vector is\n");
-    for (int i = 0; i < N; i++) {
-        std::cout<<distance[i]<< "\n";
-    }
+    std::cout<< " distance " << distance[161] << "\n";
+
 }
