@@ -53,12 +53,12 @@ int** createConnectionMatrix2() {
 }
 
 int main() {
-    int** weight = createConnectionMatrix2();
 
     struct timeval tv;
     struct timezone tz;
     gettimeofday(&tv, &tz);
     double time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
+    int** weight = createConnectionMatrix2();
 
     dijkstra(weight, SOURCE);
 
