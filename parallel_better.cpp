@@ -66,11 +66,9 @@ int main() {
     double time_start, time_end;
     struct timeval tv;
     struct timezone tz;
-    gettimeofday(&tv, &tz);
-    time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
-
     int** graph = createConnectionMatrix2();
-   
+    gettimeofday(&tv, &tz);
+    time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;  
     
     dijkstra(graph, SOURCE);
     gettimeofday(&tv, &tz);
