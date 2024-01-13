@@ -102,15 +102,20 @@ void dijkstra(int** graph, int source) {
 
         if (visited[u]) continue;
         visited[u] = true;
-
+        
+        
+        //#pragma omp parallel for directive se koristi za paralelizaciju petlje koja se ponavlja preko susjednih vrhova
+        #pragma omp parallel for
         for (int v = 0; v < N; v++) {
-            if (graph[u][v] != MAXINT && distance[u] + graph[u][v] < distance[v]) {
-                distance[v] = distance[u] + graph[u][v];
-                pq.push({distance[v], v});
+            if (!visited[v] && graph[u][v] != MAXINT) {
+                //osigurava da samo jedna nit istovremeno može izvršiti kritičnu sekciju, sprječavajući uvjete utrke prilikom ažuriranja niza udaljenosti.
+                #pragma omp critical
+                if (distance[u] + graph[u][v] < distance[v]) {
+                    distance[v] = distance[u] + graph[u][v];
+                    pq.push({distance[v], v});
+                }
             }
         }
     }
-    std::cout<< " distance " << distance[161] << "\n";
-
-    // Print distance or do other operations
+    std::cout << "distance " << distance[161] << "\n";
 }

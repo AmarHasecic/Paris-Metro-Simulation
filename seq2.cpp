@@ -142,11 +142,6 @@ void dijkstra(int** graph, int src, int dest) {
             }
         }
     }
-
-   
-    // cout << "Shortest path from Station 1 " << src << " to Staiton 2 " << dest << ": ";
-    // printPath(parent, dest);
-    // cout << " (Total distance: " << dist[dest] << ")" << endl;
 }
 
 

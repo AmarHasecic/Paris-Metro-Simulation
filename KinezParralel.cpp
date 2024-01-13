@@ -3,12 +3,14 @@
 #include <cstring>
 #include <sys/time.h>
 #include <vector>
+#include <omp.h>    
 
 #define N 60000
 #define SOURCE 103
 #define MAXINT 9999999
 
 void dijkstra(int** graph, int source);
+void parallelDijkstra(int** graph, int source, int M);
 
 int** createConnectionMatrix2() {
     int numStations = N;
@@ -59,7 +61,7 @@ int main() {
     int** weight = createConnectionMatrix2();
     gettimeofday(&tv, &tz);
     double time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
-    dijkstra(weight, SOURCE);
+    parallelDijkstra(weight, SOURCE, 8);
 
     gettimeofday(&tv, &tz);
     double time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
@@ -73,6 +75,60 @@ int main() {
 
     return 0;
 }
+
+
+
+void parallelDijkstra(int** graph, int source, int M) {
+    std::vector<int> dist(N, MAXINT);
+    std::vector<bool> visited(N, false);
+    std::vector<int> prev(N, -1);  // Array to store the path
+    dist[source] = 0;
+
+    int numThreads = std::min(M, N); // You can't have more threads than nodes
+    omp_set_num_threads(numThreads);
+
+    while (true) {
+        // Find the minimum distance node from the set of vertices not yet processed
+        // This step remains sequential since it's a reduction operation
+        int u = -1, minDistance = MAXINT;
+        for (int i = 0; i < N; i++) {
+            if (!visited[i] && dist[i] < minDistance) {
+                minDistance = dist[i];
+                u = i;
+            }
+        }
+
+        if (u == -1) break; // If there are no more nodes to process, exit the loop
+
+        visited[u] = true;
+
+        // Parallelize the relaxation step
+        #pragma omp parallel
+        {
+            int thread_num = omp_get_thread_num();
+            int start = (N / numThreads) * thread_num;
+            int end = (thread_num == numThreads - 1) ? N : start + (N / numThreads);
+
+            for (int i = start; i < end; i++) {
+                if (!visited[i] && graph[u][i] != MAXINT) {
+                    int newDist = dist[u] + graph[u][i];
+                    if (newDist < dist[i]) {
+                        dist[i] = newDist;
+                        prev[i] = u; // Record the path
+                    }
+                }
+            }
+        } // Implicit barrier at the end of omp parallel
+    }
+
+    // Print the distances and the path
+   std::cout << "rezultat: " <<dist[161] << std::endl;
+}
+
+// The rest of the code remains unchanged...
+
+
+
 
 void dijkstra(int** graph, int source) {
     int distance[N];
