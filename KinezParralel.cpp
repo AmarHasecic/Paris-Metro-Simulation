@@ -130,36 +130,3 @@ void parallelDijkstra(int** graph, int source, int M) {
 
 
 
-void dijkstra(int** graph, int source) {
-    int distance[N];
-    int visited[N];
-    int count, nextNode, minDistance;
-
-    for (int i = 0; i < N; i++) {
-        distance[i] = graph[source][i];
-        visited[i] = 0;
-    }
-    visited[source] = 1;
-    count = 1;
-
-    while (count < N) {
-        minDistance = MAXINT;
-        for (int i = 0; i < N; i++) {
-            if (distance[i] < minDistance && !visited[i]) {
-                minDistance = distance[i];
-                nextNode = i;
-            }
-        }
-
-        visited[nextNode] = 1;
-        count++;
-
-        for (int i = 0; i < N; i++) {
-            if (!visited[i] && minDistance + graph[nextNode][i] < distance[i]) {
-                distance[i] = minDistance + graph[nextNode][i];
-            }
-        }
-    }
-    std::cout<< " distance " << distance[161] << "\n";
-
-}
