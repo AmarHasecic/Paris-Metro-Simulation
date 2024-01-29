@@ -8,12 +8,11 @@
 #include <queue>
 #include <functional>   
 
-#define N 60000
+#define N 5000
 #define SOURCE 103
 #define MAXINT 9999999
 
 void dijkstra(int** graph, int source);
-void parallelDijkstra(int** graph, int source, int M);
 void parallelDijkstraProba(int** graph, int source, int M);
 
 
@@ -70,9 +69,11 @@ void parallelDijkstraProba(int** graph, int source, int numThreads) {
             }
         }
     }
-
+     for(int i =0; i < dist.size(); i++){
+        std::cout<<dist[i]<<" ";
+    }
     // Print the distances and the path
-    std::cout << "Distance from source to node 161: " << dist[161] << std::endl;
+    //std::cout << "Distance from source to node 161: " << dist[161] << std::endl;
 }
 
 int** createConnectionMatrix2() {

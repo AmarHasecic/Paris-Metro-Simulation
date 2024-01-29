@@ -7,12 +7,12 @@
 #include <sys/time.h>
 #include <omp.h>
 
-const int MAXINT = std::numeric_limits<int>::max();
-int N; // This should be set to the number of nodes in the network
-int SOURCE; // This should be set to the source node index
+#define N 60000
+#define SOURCE 103
+#define MAXINT 9999999
 
 int** createConnectionMatrix2() {
-    std::cout << N << std::endl;
+    std::cout <<"daj drugacije"<< N << std::endl;
     int** adjacencyMatrix = new int*[N];
     for (int i = 0; i < N; i++) {
         adjacencyMatrix[i] = new int[N];
@@ -91,11 +91,10 @@ void improvedParallelDijkstra(int** graph, int numCores, int numNodes, int sourc
 }
 
 int main() {
-    // Initialize N and SOURCE with the actual values
-    N = 60000;
-    SOURCE = 103;
+  
 
-    int numCores = omp_get_max_threads(); // Use maximum number of available cores
+    //int numCores = omp_get_max_threads(); // Use maximum number of available cores
+    int numCores = 8;
 
     struct timeval tv;
     struct timezone tz;

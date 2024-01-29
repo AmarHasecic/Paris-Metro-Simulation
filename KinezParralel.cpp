@@ -77,7 +77,6 @@ int main() {
 }
 
 
-
 void parallelDijkstra(int** graph, int source, int M) {
     std::vector<int> dist(N, MAXINT);
     std::vector<bool> visited(N, false);
@@ -88,45 +87,45 @@ void parallelDijkstra(int** graph, int source, int M) {
     omp_set_num_threads(numThreads);
 
     while (true) {
-        // Find the minimum distance node from the set of vertices not yet processed
-        // This step remains sequential since it's a reduction operation
         int u = -1, minDistance = MAXINT;
-        for (int i = 0; i < N; i++) {
-            if (!visited[i] && dist[i] < minDistance) {
-                minDistance = dist[i];
-                u = i;
+
+        #pragma omp parallel
+        {
+            int localU = -1, localMinDistance = MAXINT;
+
+            #pragma omp for nowait
+            for (int i = 0; i < N; i++) {
+                if (!visited[i] && dist[i] < localMinDistance) {
+                    localMinDistance = dist[i];
+                    localU = i;
+                }
             }
-        }
+
+            #pragma omp critical
+            {
+                if (localMinDistance < minDistance) {
+                    minDistance = localMinDistance;
+                    u = localU;
+                }
+            }
+        } // Implicit barrier at the end of omp parallel
 
         if (u == -1) break; // If there are no more nodes to process, exit the loop
 
         visited[u] = true;
 
         // Parallelize the relaxation step
-        #pragma omp parallel
-        {
-            int thread_num = omp_get_thread_num();
-            int start = (N / numThreads) * thread_num;
-            int end = (thread_num == numThreads - 1) ? N : start + (N / numThreads);
-
-            for (int i = start; i < end; i++) {
-                if (!visited[i] && graph[u][i] != MAXINT) {
-                    int newDist = dist[u] + graph[u][i];
-                    if (newDist < dist[i]) {
-                        dist[i] = newDist;
-                        prev[i] = u; // Record the path
-                    }
+        #pragma omp parallel for
+        for (int i = 0; i < N; i++) {
+            if (!visited[i] && graph[u][i] != MAXINT) {
+                int newDist = dist[u] + graph[u][i];
+                if (newDist < dist[i]) {
+                    dist[i] = newDist;
+                    prev[i] = u; // Record the path
                 }
             }
-        } // Implicit barrier at the end of omp parallel
+        }
     }
+    std::cout<<"Distance : "<<dist[161];
 
-    // Print the distances and the path
-   std::cout << "rezultat: " <<dist[161] << std::endl;
 }
-
-// The rest of the code remains unchanged...
-
-
-
-

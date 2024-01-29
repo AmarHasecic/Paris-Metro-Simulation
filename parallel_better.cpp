@@ -13,7 +13,7 @@
 
 //rezultat 794 zadnja linija za ispisati
 
-void dijkstra(int** graph, int source);
+void dijkstra(int** graph, int source, int threads);
 
 int** createConnectionMatrix2() {
     int numStations = N;
@@ -58,10 +58,9 @@ int** createConnectionMatrix2() {
 }
 
 int main() {
-    int threads = 4;
     // std::cout << "Please enter number of threads: ";
     // std::cin >> threads;
-    omp_set_num_threads(threads);
+    
 
     double time_start, time_end;
     struct timeval tv;
@@ -70,7 +69,7 @@ int main() {
     gettimeofday(&tv, &tz);
     time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;  
     
-    dijkstra(graph, SOURCE);
+    dijkstra(graph, SOURCE, 4);
     gettimeofday(&tv, &tz);
 
     time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
@@ -88,10 +87,11 @@ int main() {
 
 
 
-void dijkstra(int** graph, int source) {
+void dijkstra(int** graph, int source, int threads) {
     std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
     std::vector<int> distance(N, MAXINT);
     std::vector<bool> visited(N, false);
+    omp_set_num_threads(threads);
 
     distance[source] = 0;
     pq.push({0, source});
