@@ -6,7 +6,7 @@
 #include <vector>
 #include <queue>
 
-#define N 60000
+#define N 40000
 #define SOURCE 103
 #define MAXINT 9999999
 
@@ -65,16 +65,20 @@ int main() {
     double time_start, time_end;
     struct timeval tv;
     struct timezone tz;
+    double sumaVremena =0;
     int** graph = createConnectionMatrix2();
-    gettimeofday(&tv, &tz);
-    time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;  
-    
-    dijkstra(graph, SOURCE, 4);
-    gettimeofday(&tv, &tz);
+    for(int i=0; i<1000; i++){
+        gettimeofday(&tv, &tz);
+        time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;  
+        
+        dijkstra(graph, SOURCE, 4);
+        gettimeofday(&tv, &tz);
 
-    time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
-    std::cout << "Nodes: " << N << "\n";
-    std::cout << "Time cost is " << time_end - time_start << "\n";
+        time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
+        sumaVremena += (time_end - time_start);
+    }
+    
+    std::cout << "Time cost is " << sumaVremena << "\n";
 
     for (int i = 0; i < N; i++) {
         delete[] graph[i];
@@ -117,5 +121,4 @@ void dijkstra(int** graph, int source, int threads) {
             }
         }
     }
-    std::cout << "distance " << distance[161] << "\n";
 }

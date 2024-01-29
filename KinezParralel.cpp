@@ -5,7 +5,7 @@
 #include <vector>
 #include <omp.h>    
 
-#define N 60000
+#define N 40000
 #define SOURCE 103
 #define MAXINT 9999999
 
@@ -59,14 +59,19 @@ int main() {
     struct timeval tv;
     struct timezone tz;
     int** weight = createConnectionMatrix2();
-    gettimeofday(&tv, &tz);
-    double time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
-    parallelDijkstra(weight, SOURCE, 8);
+    double sumaVremena = 0;
+    for(int i=0; i<1000; i++){
+        gettimeofday(&tv, &tz);
+        double time_start = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
+        parallelDijkstra(weight, SOURCE, 8);
 
-    gettimeofday(&tv, &tz);
-    double time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
+        gettimeofday(&tv, &tz);
+        double time_end = (double)tv.tv_sec + (double)tv.tv_usec / 1000000.00;
+        sumaVremena +=  (time_end - time_start);       
+    }
+    
 
-    std::cout << "\nNodes: " << N << " time cost is " << time_end - time_start << "\n\n";
+    std::cout << "\nNodes: " << N << " time cost is " << sumaVremena << "\n\n";
 
     for (int i = 0; i < N; ++i) {
         delete[] weight[i];
@@ -126,6 +131,5 @@ void parallelDijkstra(int** graph, int source, int M) {
             }
         }
     }
-    std::cout<<"Distance : "<<dist[161];
 
 }
